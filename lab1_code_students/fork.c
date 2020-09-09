@@ -8,25 +8,26 @@ int main(int argc, char **argv)
     unsigned i;
     unsigned niterations = 1000;
     pid_0 = fork();
-    if (pid_0 == 0){
-        for (i = 0; i < niterations; ++i)
-            printf("A = %d, ", pid_0);
-    } else{
-        for (i = 0; i < niterations; ++i)
-            printf("B = %d, ", pid_0);
-    } 
-
-    unsigned n;
     pid_1 = fork();
-    if (pid_1 == 0){
-        for (i = 0; n < niterations; ++n)
-            printf("A = %d, ", pid_1);
-    } else{
-        for (i = 0; n < niterations; ++n)
-            printf("C = %d, ", pid_1);
-    }
-    
+    for (i = 0; i < niterations; ++i){
 
+        if (pid_0 == 0){ //Child
+            printf("Child A = %d and pidID = %d \n", i,  getpid());
+
+        }
+        else {
+
+            if(pid_1 == 0){
+                printf("Child B = %d and pidID = %d \n", i, getpid()); 
+            }
+
+            else{
+                printf("P = %d and pidID = %d \n", i, getpid()); 
+            }
+        }
+
+    
+    }  
 
     printf("\n");
 }
