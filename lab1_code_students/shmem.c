@@ -2,14 +2,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <pthread.h>
-#include <semaphore.h>
-
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#include <pthread.h>
+#include <semaphore.h>
 #include <fcntl.h> /* For O_* constants */
 
 #define SHMSIZE 128
@@ -45,9 +44,6 @@ int main(int argc, char **argv)
 	shmp->counter = 0;
 
 	pid_t pid = fork();;
-	
-
-	unsigned int time_, status;
 
 	int remove_from_buffer( void ){
 			int temp;
