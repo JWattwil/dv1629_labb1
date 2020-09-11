@@ -9,7 +9,7 @@
 #define PERMS 0644
 struct my_msgbuf {
    long mtype;
-   char mtext[200];
+   int int_msg;
 };
 
 int main(void) {
@@ -31,12 +31,13 @@ int main(void) {
 
    for(;;) { /* normally receiving never ends but just to make conclusion */
              /* this program ends with string of end */
-      if (msgrcv(msqid, &buf, sizeof(buf.mtext), 0, 0) == -1) {
+
+      if (msgrcv(msqid, &buf, sizeof(buf), 0, 0) == -1) {
          perror("msgrcv");
          exit(1);
       }
-      printf("recvd: \"%s\"\n", buf.mtext);
-      toend = strcmp(buf.mtext,"end");
+      printf("recvd: \"%d\"\n", buf.int_msg);
+      toend = buf.int_msg;
       if (toend == 0)
       break;
    }
