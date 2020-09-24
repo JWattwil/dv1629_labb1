@@ -22,10 +22,14 @@ unsigned odd(unsigned long num) {
 // simulate id performing 1000 transactions
 void do1000Transactions(unsigned long id) {
     for (int i = 0; i < 1000; i++) {
+        pthread_mutex_lock(&lock);
         if (odd(id))
             deposit(100.00); // odd threads deposit
+            
         else
             withdraw(100.00); // even threads withdraw
+
+        pthread_mutex_unlock(&lock); 
     }
 }
 
