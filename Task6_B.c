@@ -32,7 +32,7 @@ int main(void) {
    for(;;) { /* normally receiving never ends but just to make conclusion */
              /* this program ends with string of end */
 
-      if (msgrcv(msqid, &buf, sizeof(buf), 0, 0) == -1) {
+      if (msgrcv(msqid, &buf, sizeof(buf), 0, 0) == -1) { //Reading the reference of the struct from file (memory) to buf here
          perror("msgrcv");
          exit(1);
       }

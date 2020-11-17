@@ -22,14 +22,14 @@ unsigned odd(unsigned long num) {
 // simulate id performing 1000 transactions
 void do1000Transactions(unsigned long id) {
     for (int i = 0; i < 1000; i++) {
-        pthread_mutex_lock(&lock);
+        pthread_mutex_lock(&lock); // locking the critical area of the code
         if (odd(id))
             deposit(100.00); // odd threads deposit
             
         else
             withdraw(100.00); // even threads withdraw
 
-        pthread_mutex_unlock(&lock); 
+        pthread_mutex_unlock(&lock); // unlocking it so the next thread can run it
     }
 }
 
@@ -45,14 +45,19 @@ int main(int argc, char** argv) {
     unsigned long nThreads = 0;
     if (argc > 1)
         nThreads = atoi(argv[1]);
+    /*creating the threads*/
     children = malloc( nThreads * sizeof(pthread_t) );
+
     for (id = 1; id < nThreads; id++)
         pthread_create(&(children[id-1]), NULL, child, (void*)id);
-    do1000Transactions(0); // main thread work (id=0)
+
+    do1000Transactions(0); // main thread work
+
     for (id = 1; id < nThreads; id++)
-        pthread_join(children[id-1], NULL);
+        pthread_join(children[id-1], NULL); // joining all the threads we know they are done working
+    
     printf("\nThe final account balance with %lu threads is $%.2f.\n\n", nThreads, bankAccountBalance);
-    free(children);
-    pthread_mutex_destroy(&lock);
-    return 0;
+    
+    free(children); // we do not need the threads more
+    pthread_mutex_destroy(&lock); // no need for mutexes anymore
 }

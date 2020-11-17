@@ -7,6 +7,8 @@
 #include <sys/msg.h>
 
 #define PERMS 0644
+
+/*stuct to save to file so that Task6_B.c can read it from msgq.txt*/
 struct my_msgbuf {
    long mtype;
    int int_msg;
@@ -15,9 +17,10 @@ struct my_msgbuf {
 int main(void) {
    struct my_msgbuf buf;
    int msqid;
-   int len;
    key_t key;
    char input_str [255];
+
+   /*creating file that Task6_B.c can read from*/
    system("touch msgq.txt");
 
    if ((key = ftok("msgq.txt", 'B')) == -1) {
@@ -30,15 +33,15 @@ int main(void) {
       exit(1);
    }
    printf("message queue: ready to send messages.\n");
-   printf("Enter lines of text, %d\ to quit:\n", 0);
-   buf.mtype = 1; /* we don't really care in this case */
+   printf("Enter lines of text, \"%d\" to quit:\n", 0);
+   buf.mtype = 1; // we don't really care in this case 
 
    while(fgets(input_str, 255, stdin) != NULL) {
       if( strcmp(input_str, "0") != 0){
-         buf.int_msg = atoi(input_str); //Makes input into int
-         memset(input_str, 0, sizeof(input_str)); //Clears the input string
+         buf.int_msg = atoi(input_str); // makes input into int
+         memset(input_str, 0, sizeof(input_str)); // clears the input string
       
-         if(msgsnd(msqid, &buf, sizeof(buf.int_msg), 0) == -1)
+         if(msgsnd(msqid, &buf, sizeof(buf.int_msg), 0) == -1) // saving the reference to the struct in memory to shared memory (file)
             perror("msgsnd");
       }
       else
@@ -46,7 +49,7 @@ int main(void) {
 
    }
    buf.int_msg = 0;
-   if(msgsnd(msqid, &buf, sizeof(buf.int_msg), 0) == -1)
+   if(msgsnd(msqid, &buf, sizeof(buf.int_msg), 0) == -1) // stores the exit command to the shared memory(file)
       perror("msgsnd");
 
    if (msgctl(msqid, IPC_RMID, NULL) == -1) {

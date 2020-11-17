@@ -15,7 +15,6 @@ void* child(void* params) {
 	unsigned int numThreads = args->numThreads;
 	args->squaredID = childID * childID;
 	printf("Greetings from child #%u of %u\n", childID, numThreads);
-	//free(args);
 	return args;
 }
 
