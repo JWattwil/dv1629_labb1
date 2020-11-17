@@ -2,10 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
 
+#define THREADS_MAX 8
 #define KILO (1024)
 #define MEGA (1024*1024)
 #define MAX_ITEMS (64*MEGA)
@@ -15,7 +15,6 @@ static int *v;
 
 sem_t mutex;
 int thread_count;
-int THREADS_MAX;
 
 struct 
 thread_args
@@ -171,14 +170,8 @@ check()
 }
 
 int
-main(int argc, char *argv[])
-{   
-    if(argc == 1){
-        printf("ERROR: Amount of threads not specified!");
-        return 0;
-    }
-    THREADS_MAX = atoi(argv[1]);
-
+main(int argc, char **argv)
+{
     /* main thread is still a thread */
     thread_count++;
 
