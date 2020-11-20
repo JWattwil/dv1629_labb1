@@ -34,7 +34,7 @@ init_matrix(void)
 void* 
 matmul_seq(void *id)
 {
-    unsigned i = (unsigned) id;
+    unsigned long i = (unsigned long)id;
     int j, k;
 
     for (j = 0; j < SIZE; j++) {
@@ -65,10 +65,11 @@ main(int argc, char **argv)
     rows = malloc(SIZE * sizeof(pthread_t));
     init_matrix();
 
-    for (int id = 0; id < SIZE; id++)
+    unsigned long id;
+    for (id = 0; id < SIZE; id++)
         pthread_create(&(rows[id]), NULL, matmul_seq, (void*)id);
 
-    for (int id = 0; id < SIZE; id++)
+    for (id = 0; id < SIZE; id++)
         pthread_join(rows[id], NULL);
 
     print_matrix();

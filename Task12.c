@@ -60,7 +60,9 @@ void *action (void *arg){
                 chopsticks[id][getRight(id)] = names[id][2];
                 chopsticks[getRight(id)][id] = names[id][2];
                 printf("%s is eating -> Has both chopsticks\n", names[id]);
+
                 sleep(rand() %20 + 10);     //Eating
+
                 // Dropp right chopstick
                 chopsticks[id][getRight(id)] = 0;
                 chopsticks[getRight(id)][id] = 0;
@@ -82,7 +84,6 @@ int main()
     unsigned long int id;
     pthread_t *professors;
     professors = malloc( nProf * sizeof(pthread_t) );
-    
 
     names[0] = "Tanenbaum";
     names[1] = "Bos";

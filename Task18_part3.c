@@ -75,17 +75,14 @@ partition(int *v, unsigned low, unsigned high, unsigned pivot_index)
 }
 
 static void* 
-quick_sort(void *arguments)//(int *v, unsigned low, unsigned high)
+quick_sort(void *arguments)
 {
-	
-    //printf("Thread count: %d\n", thread_count);
-
 	struct thread_args *args = arguments;
-    struct thread_args send_struct;
+    struct thread_args send_struct; // each thread need its own memory to send to the next thread
     unsigned pivot_index, low_index, high_index;
 
     pthread_t thread;
-    int thread_error;
+    int thread_error; // error handling
     int thread_comp = 0;
 
     low_index = args->low;
@@ -103,7 +100,10 @@ quick_sort(void *arguments)//(int *v, unsigned low, unsigned high)
     /* partition the vector */
     pivot_index = partition(args->dataset, args->low, args->high, pivot_index);  
     
+    /* semaphores to stop race conditions*/
     sem_wait(&mutex);
+    /* if thread_count is less than the maximum allowed number of threads we can set the thread comparison 
+        flag(thread_comp) to 1 and tell the program that we are going to create a nother thread.*/
     if(thread_count < THREADS_MAX){thread_comp = 1; thread_count++;}
     sem_post(&mutex);
 
@@ -111,57 +111,52 @@ quick_sort(void *arguments)//(int *v, unsigned low, unsigned high)
     
     if (thread_comp == 1){
         /*new thread handels the lower portion*/
-        
         send_struct.low = low_index;
         send_struct.high = pivot_index - 1;  
 
-        
         thread_error = pthread_create(&thread, NULL, quick_sort, &send_struct);                            
         if (thread_error){                          
             printf("ERROR; return code from pthread_create(thread) is %d. Thread count: %d\n", thread_error, thread_count);                            
             exit(-1);                          
         }
         
-        /*current thread handles the upper portion*/
+        /* current thread handles the upper portion */
         args->high = high_index;
         args->low = pivot_index + 1;
         quick_sort(args);
     
-        /*wait for the new thread to be finished before going up a level*/
+        /* wait for the new thread to be finished before going up a level */
         thread_error = pthread_join(thread, NULL);                            
         if (thread_error){                          
             printf("ERROR; return code from pthread_join(thread) is %d. Thread count: %d\n", thread_error, thread_count);                            
             exit(-1);                          
         }
+        /* the thread is joined, so the global counter can be decreased*/
         thread_count--;
         
     }
+    /* if no new thread is created the current thread runs recursivly */
     else
     {
-
         if (args->low < pivot_index){
             send_struct.low = low_index;
             send_struct.high = pivot_index - 1; 
             quick_sort(&send_struct);
         }
-        
         if (pivot_index < args->high){
             send_struct.low = pivot_index + 1;
             send_struct.high = high_index; 
             quick_sort(&send_struct);
-        }
-        
+        } 
     }
     return NULL;
 }
-
+/* brute force way to check that the algoritm worked. This is activated by using the third argument*/
 static void 
 check()
 {
-    for (unsigned i = 1; i < MAX_ITEMS; i++)
-    {
-        if (v[i-1] > v[i])
-        {
+    for (unsigned i = 1; i < MAX_ITEMS; i++){
+        if (v[i-1] > v[i]){
             printf("Something went wrong!\n");
             return;
         }
@@ -169,7 +164,6 @@ check()
     printf("No faults!\n");
     return;
 }
-
 int
 main(int argc, char *argv[])
 {   
@@ -191,14 +185,15 @@ main(int argc, char *argv[])
     sendStruct.dataset = v;
 	sendStruct.low = 0;
 	sendStruct.high = MAX_ITEMS-1;
-
     void *send_ptr = &sendStruct;
     
     quick_sort(send_ptr);
 
     //print_array();
-    check();
-
+    if(argc > 2){
+        check();
+    }
+    
     sem_destroy(&mutex);
     return 0;
 }

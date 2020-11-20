@@ -7,7 +7,7 @@
 const char *names[5];
 char chopsticks[5][5];
 
-pthread_mutex_t arbirator;
+pthread_mutex_t arbitrator;
 
 int 
 getLeft(int id){
@@ -52,7 +52,7 @@ void
     while(1) {
         sleep(rand() %10 + 2); //Thinking
         if((chopsticks[id][getLeft(id)] == 0 && chopsticks[getLeft(id)][id] == 0) && (chopsticks[id][getRight(id)] == 0 && chopsticks[getRight(id)][id] == 0)){
-            pthread_mutex_unlock(&arbirator);
+            pthread_mutex_unlock(&arbitrator);
 
             chopsticks[id][getLeft(id)] = names[id][2];
             chopsticks[getLeft(id)][id] = names[id][2];
@@ -60,7 +60,7 @@ void
             chopsticks[getRight(id)][id] = names[id][2];
             printf("%s has both chopsticks\n", names[id]);
 
-            pthread_mutex_unlock(&arbirator);
+            pthread_mutex_unlock(&arbitrator);
 
             printf("%s starts eating\n", names[id]);
             sleep(rand() %20 + 10); //Eating
@@ -85,7 +85,7 @@ main()
     pthread_t *professors;
     professors = malloc( nProf * sizeof(pthread_t) );
     
-    if (pthread_mutex_init(&arbirator, NULL) != 0)
+    if (pthread_mutex_init(&arbitrator, NULL) != 0)
     {
         printf("\n ERROR: mutex init failed\n");
         exit(-1);
